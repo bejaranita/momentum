@@ -450,23 +450,13 @@
         function loadThemesFromSheets() {
             document.getElementById('sync-status').textContent = '⏳ Sincronizando...';
             
-            fetch(SCRIPT_URL + '?action=read')
-                .then(response => response.json())
-                .then(data => {
-                    if (Array.isArray(data) && data.length > 0) {
-                        // Mapear datos de Google Sheets a nuestro formato
-                        themes = data.map(row => ({
-                            tema: row.TEMA || '',
-                            accion: row.ACCION_CLAVE || '',
-                            categoria: row.CATEGORIA || 'LABORAL',
-                            estado: row.ESTADO || '1-Abierto',
-                            prioridad: calculatePriority(row.FECHA_COMPROMISO) || 'Pendiente',
-                            fecha_creacion: row.FECHA_CREACION || new Date().toLocaleDateString('es-PE'),
-                            fecha_compromiso: row.FECHA_COMPROMISO || '',
-                            notas: row.NOTAS || '',
-                            quien: row.QUIÉN || 'Sandra'
-                        })).filter(t => t.tema); // Solo temas válidos
-                        
+            // Leer CSV desde GitHub
+            fetch('https://raw.githubusercontent.com/bejaranita/momentum/main/temas.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    themes = parseCSV(csv);
+                    
+                    if (themes.length > 0) {
                         // Guardar en localStorage
                         saveThemes();
                         
@@ -479,12 +469,59 @@
                         loadCategoriesFromSheets();
                         
                         document.getElementById('sync-status').textContent = '✅ Sincronizado';
+                        console.log(`Cargados ${themes.length} temas desde CSV`);
                     }
                 })
                 .catch(error => {
-                    console.log('Error cargando temas:', error);
+                    console.log('Error cargando CSV:', error);
                     document.getElementById('sync-status').textContent = '⚠️ Error en sincronización';
                 });
+        }
+
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const themes = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const values = lines[i].split(',').map((v, idx) => {
+                    // Manejar valores entre comillas
+                    if (idx === 0 && v.startsWith('"')) {
+                        let val = v.substring(1);
+                        let j = i;
+                        while (!v.endsWith('"') && j < lines.length - 1) {
+                            j++;
+                            val += ',' + lines[j].split(',')[0];
+                        }
+                        lines[i] = val + (j < lines.length - 1 ? ',' + lines[i].substring(lines[i].indexOf(',')+1) : '');
+                        return val.replace(/"/g, '');
+                    }
+                    return v.trim().replace(/"/g, '');
+                });
+                
+                const theme = {};
+                headers.forEach((header, index) => {
+                    theme[header] = values[index] || '';
+                });
+                
+                if (theme.TEMA) {
+                    themes.push({
+                        tema: theme.TEMA || '',
+                        accion: theme.ACCION_CLAVE || '',
+                        categoria: theme.CATEGORIA || 'LABORAL',
+                        estado: theme.ESTADO || '1-Abierto',
+                        prioridad: calculatePriority(theme.FECHA_COMPROMISO) || 'Pendiente',
+                        fecha_creacion: theme.FECHA_CREACION || new Date().toLocaleDateString('es-PE'),
+                        fecha_compromiso: theme.FECHA_COMPROMISO || '',
+                        notas: theme.NOTAS || '',
+                        quien: theme.QUIÉN || 'Sandra'
+                    });
+                }
+            }
+            
+            return themes;
         }
 
         function syncWithSheets() {
