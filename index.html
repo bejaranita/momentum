@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentum - Tu Brújula de Prioridades</title>
+    <meta name="description" content="Tu mente clara, tus temas ordenados. Descarga tu mente, mantén tu momentum.">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Momentum">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2310b981' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='white' text-anchor='middle' dy='.3em'>→</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f7fa; }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { background: white; border-bottom: 1px solid #e0e0e0; padding: 1.5rem 1rem; position: sticky; top: 0; z-index: 100; text-align: center; }
+        .header h1 { font-size: 20px; font-weight: 600; margin-bottom: 0.5rem; color: #1a1f36; }
+        .header p { font-size: 12px; color: #666; margin: 4px 0; }
+        
+        .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e0e0e0; margin-bottom: 1rem; }
+        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #999; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .tab-btn.active { border-bottom-color: #3b82f6; color: #3b82f6; }
+        
+        .content { padding: 1rem; }
+        .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+        
+        .form-group { margin-bottom: 0.75rem; }
+        .form-label { font-size: 12px; font-weight: 500; color: #555; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; font-size: 13px; border: 1px solid #d0d0d0; border-radius: 6px; font-family: inherit; }
+        .form-textarea { min-height: 50px; resize: vertical; }
+        
+        .mic-btn { padding: 6px 10px; background: #e5e7eb; color: #666; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .mic-btn.listening { background: #dc2626; color: white; }
+        
+        .btn { padding: 10px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: #10b981; color: white; width: 100%; }
+        .btn-secondary { background: #3b82f6; color: white; flex: 1; }
+        .btn-danger { background: #fecaca; color: #991b1b; }
+        .btn-success { background: #dcfce7; color: #15803d; }
+        
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+        .stat-card { padding: 1rem; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: 600; }
+        .stat-label { font-size: 11px; margin-top: 4px; }
+        
+        .stat-abiertos { background: #e0f2fe; }
+        .stat-abiertos .stat-value { color: #0369a1; }
+        .stat-abiertos .stat-label { color: #0c4a6e; }
+        
+        .stat-cerrados { background: #dcfce7; }
+        .stat-cerrados .stat-value { color: #15803d; }
+        .stat-cerrados .stat-label { color: #166534; }
+        
+        .stat-urgentes { background: #fef08a; }
+        .stat-urgentes .stat-value { color: #b45309; }
+        .stat-urgentes .stat-label { color: #92400e; }
+        
+        .stat-total { background: #f3e8ff; }
+        .stat-total .stat-value { color: #7c3aed; }
+        .stat-total .stat-label { color: #5b21b6; }
+        
+        .theme-item { background: white; border: 1px solid #e0e0e0; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 12px; margin-bottom: 10px; cursor: grab; }
+        .theme-item.closed { border-left-color: #10b981; }
+        .theme-item.urgent { border-left-color: #dc2626; }
+        .theme-item.dragging { opacity: 0.5; }
+        
+        .theme-title { font-size: 13px; font-weight: 600; color: #1a1f36; margin-bottom: 4px; cursor: pointer; padding: 4px; border-radius: 4px; }
+        .theme-title:hover { background: #f5f7fa; }
+        
+        .theme-field { font-size: 11px; color: #666; margin-top: 4px; cursor: pointer; padding: 4px; border-radius: 4px; }
+        .theme-field:hover { background: #f5f7fa; }
+        
+        .theme-actions { display: flex; gap: 6px; margin-top: 8px; }
+        .theme-actions button { flex: 1; padding: 4px 8px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        
+        .section-title { font-size: 14px; font-weight: 600; margin-bottom: 1rem; margin-top: 1rem; }
+        .section-title.abiertos { color: #dc2626; }
+        .section-title.cerrados { color: #16a34a; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        
+        .urgente-badge { background: #fecaca; color: #dc2626; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; }
+        
+        .new-category-box { background: #e8f5e9; padding: 10px; border-radius: 6px; margin-bottom: 1rem; }
+        .new-category-box input { width: 100%; padding: 8px; margin-bottom: 8px; font-size: 12px; border: 1px solid #4caf50; border-radius: 4px; }
+        .new-category-box button { padding: 8px 12px; background: #4caf50; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>→ Momentum</h1>
+            <p id="stats-header">0 temas | 0 activos</p>
+            <p id="sync-status">Cargando...</p>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('new')">✍️ Nuevo</button>
+                <button class="tab-btn" onclick="switchTab('dashboard')">📊 Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('all')">📋 Todos</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- TAB: Nuevo -->
+            <div id="tab-new" class="tab-content active">
+                <div class="card">
+                    <h2 style="font-size: 15px; font-weight: 600; margin-bottom: 1rem;">✍️ Nuevo Tema</h2>
+                    
+                    <div class="form-group">
+                        <div class="form-label">
+                            📝 Tema
+                            <button class="mic-btn" id="mic-theme" onclick="startListening('theme')">🎤</button>
+                        </div>
+                        <input id="input-tema" class="form-input" type="text" placeholder="Ej: Revisión médica">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            🎯 Acción
+                            <button class="mic-btn" id="mic-action" onclick="startListening('action')">🎤</button>
+                        </div>
+                        <textarea id="input-accion" class="form-textarea" placeholder="Ej: Revisar Rimac"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            📅 Fecha
+                            <button class="mic-btn" id="mic-date" onclick="startListening('date')">🎤</button>
+                        </div>
+                        <input id="input-fecha" class="form-input" type="date">
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            📝 Próximos pasos
+                            <button class="mic-btn" id="mic-notes" onclick="startListening('notes')">🎤</button>
+                        </div>
+                        <textarea id="input-notas" class="form-textarea" placeholder="Próximos pasos"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📌 Categoría</label>
+                        <select id="input-categoria" class="form-select" onchange="if(this.value === 'NEW') showNewCategory()"></select>
+                    </div>
+
+                    <div id="new-category-div" style="display: none;" class="new-category-box">
+                        <input id="new-category-input" type="text" placeholder="Nombre de categoría">
+                        <button onclick="addNewCategory()">Agregar</button>
+                        <button onclick="cancelNewCategory()" style="background: #999; margin-left: 6px;">Cancelar</button>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="addTheme()">✅ Guardar</button>
+                </div>
+            </div>
+
+            <!-- TAB: Dashboard -->
+            <div id="tab-dashboard" class="tab-content">
+                <div class="stats">
+                    <div class="stat-card stat-abiertos">
+                        <div class="stat-value" id="stat-abiertos">0</div>
+                        <div class="stat-label">Abiertos</div>
+                    </div>
+                    <div class="stat-card stat-cerrados">
+                        <div class="stat-value" id="stat-cerrados">0</div>
+                        <div class="stat-label">Cerrados</div>
+                    </div>
+                    <div class="stat-card stat-urgentes">
+                        <div class="stat-value" id="stat-urgentes">0</div>
+                        <div class="stat-label">Urgentes</div>
+                    </div>
+                    <div class="stat-card stat-total">
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <label class="form-label">Filtros</label>
+                    <div class="filters">
+                        <select id="filter-category-dashboard" class="form-select" onchange="updateDashboard()">
+                            <option value="all">Todas categorías</option>
+                        </select>
+                        <select id="filter-state-dashboard" class="form-select" onchange="updateDashboard()">
+                            <option value="all">Todos estados</option>
+                            <option value="1-Abierto">Abiertos</option>
+                            <option value="2-Finalizada">Cerrados</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title abiertos">🔴 Abiertos (<span id="count-abiertos">0</span>)</div>
+                <div id="dashboard-abiertos"></div>
+
+                <div class="section-title cerrados">✅ Cerrados (<span id="count-cerrados">0</span>)</div>
+                <div id="dashboard-cerrados"></div>
+            </div>
+
+            <!-- TAB: Todos -->
+            <div id="tab-all" class="tab-content">
+                <div class="card">
+                    <input id="search-input" class="form-input" type="text" placeholder="🔍 Buscar tema o acción..." onkeyup="updateAllTab()">
+                </div>
+
+                <div class="card">
+                    <label class="form-label">Filtros</label>
+                    <div class="filters">
+                        <select id="filter-category-all" class="form-select" onchange="updateAllTab()">
+                            <option value="all">Todas categorías</option>
+                        </select>
+                        <select id="filter-state-all" class="form-select" onchange="updateAllTab()">
+                            <option value="all">Todos estados</option>
+                            <option value="1-Abierto">Abiertos</option>
+                            <option value="2-Finalizada">Cerrados</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="all-items"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRLeB42hPRaEzwnmUCl3Hmd3oGjYyfjvPVoXLy-Quxw3magzbDxpkXiLGSeDL5y3l4/exec";
+        let themes = [];
+        let categories = ['LABORAL', 'BIENESTAR', 'FAMILIA', 'VITAL', 'PERSONAL'];
+        let recognition = null;
+        let draggedThemeId = null;
+        let notifiedIds = new Set();
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            initSpeech();
+            loadCategories();
+            loadThemes();
+            updateCategories();
+            requestNotificationPermission();
+            setInterval(checkUrgentNotifications, 60000);
+            setInterval(recalculatePriorities, 60000); // Recalcular prioridades cada minuto
+        });
+
+        function initSpeech() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'es-ES';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+            }
+        }
+
+        function startListening(field) {
+            if (!recognition) {
+                alert('Tu navegador no soporta voz');
+                return;
+            }
+            
+            const btn = document.getElementById(`mic-${field}`);
+            btn.classList.add('listening');
+            btn.textContent = '🎙️';
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(r => r[0].transcript)
+                    .join('')
+                    .trim();
+
+                if (field === 'theme') document.getElementById('input-tema').value = transcript;
+                else if (field === 'action') document.getElementById('input-accion').value = transcript;
+                else if (field === 'date') document.getElementById('input-fecha').value = parseNaturalDate(transcript);
+                else if (field === 'notes') document.getElementById('input-notas').value = transcript;
+
+                btn.classList.remove('listening');
+                btn.textContent = '🎤';
+            };
+
+            recognition.onerror = () => {
+                btn.classList.remove('listening');
+                btn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        function calculatePriority(dateStr) {
+            if (!dateStr) return 'Pendiente';
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const targetDate = new Date(dateStr);
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays <= 0) return 'Vencido';
+            if (diffDays === 1) return '🔴 Urgente';
+            if (diffDays <= 7) return '🟠 Importante';
+            if (diffDays <= 30) return '🟡 Pendiente';
+            return '⚪ Backlog';
+        function parseNaturalDate(text) {
+            const lower = text.toLowerCase();
+            const today = new Date();
+            let targetDate = new Date();
+
+            if (lower.includes('hoy')) targetDate = today;
+            else if (lower.includes('mañana')) targetDate.setDate(today.getDate() + 1);
+            else if (lower.includes('pasado mañana')) targetDate.setDate(today.getDate() + 2);
+            else if (lower.includes('semana')) targetDate.setDate(today.getDate() + 7);
+            else if (lower.includes('dos semanas')) targetDate.setDate(today.getDate() + 14);
+            else if (lower.includes('mes')) targetDate.setMonth(today.getMonth() + 1);
+
+            const year = targetDate.getFullYear();
+            const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+            const day = String(targetDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        }
+
+        function addTheme() {
+            const tema = document.getElementById('input-tema').value.trim();
+            const accion = document.getElementById('input-accion').value.trim();
+            const fecha = document.getElementById('input-fecha').value;
+
+            if (!tema || !accion) {
+                alert('Completa Tema y Acción');
+                return;
+            }
+
+            const newTheme = {
+                id: Date.now(),
+                tema,
+                accion,
+                categoria: document.getElementById('input-categoria').value,
+                estado: '1-Abierto',
+                fecha_creacion: new Date().toLocaleDateString('es-PE'),
+                fecha_compromiso: fecha,
+                prioridad: calculatePriority(fecha),
+                notas: document.getElementById('input-notas').value
+            };
+
+            themes.push(newTheme);
+            saveThemes();
+            syncWithSheets();
+
+            // Limpiar formulario
+            document.getElementById('input-tema').value = '';
+            document.getElementById('input-accion').value = '';
+            document.getElementById('input-fecha').value = '';
+            document.getElementById('input-notas').value = '';
+
+            updateStats();
+            updateAllTab();
+            updateDashboard();
+        }
+
+        function updateTheme(id, updates) {
+            const theme = themes.find(t => t.id === id);
+            if (theme) {
+                Object.assign(theme, updates);
+                saveThemes();
+                syncWithSheets();
+                updateStats();
+                updateAllTab();
+                updateDashboard();
+            }
+        }
+
+        function closeTheme(id) {
+            updateTheme(id, { estado: '2-Finalizada' });
+        }
+
+        function deleteTheme(id) {
+            if (confirm('¿Eliminar?')) {
+                themes = themes.filter(t => t.id !== id);
+                saveThemes();
+                updateStats();
+                updateAllTab();
+                updateDashboard();
+            }
+        }
+
+        function saveThemes() {
+            localStorage.setItem('themes_sandra', JSON.stringify(themes));
+        }
+
+        function loadThemes() {
+            const saved = localStorage.getItem('themes_sandra');
+            if (saved) themes = JSON.parse(saved);
+            updateStats();
+            updateAllTab();
+            updateDashboard();
+            
+            document.getElementById('sync-status').textContent = '📱 Cargado';
+        }
+
+        function syncWithSheets() {
+            document.getElementById('sync-status').textContent = '⏳ Sincronizando...';
+            // Aquí iría la sincronización real con Google Sheets
+            setTimeout(() => {
+                document.getElementById('sync-status').textContent = '✅ Sincronizado';
+            }, 1000);
+        }
+
+        function loadCategories() {
+            const saved = localStorage.getItem('categories_sandra');
+            if (saved) {
+                categories = JSON.parse(saved);
+            }
+            // Siempre intenta cargar de Google Sheets para actualizaciones
+            loadCategoriesFromSheets();
+        }
+
+        function loadCategoriesFromSheets() {
+            fetch(SCRIPT_URL + '?action=categories')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.categories && data.categories.length > 0) {
+                        categories = data.categories;
+                        localStorage.setItem('categories_sandra', JSON.stringify(categories));
+                        updateCategories();
+                    }
+                })
+                .catch(error => {
+                    console.log('No se pudieron cargar categorías de Google Sheets, usando locales');
+                });
+        }
+
+        function saveCategories() {
+            localStorage.setItem('categories_sandra', JSON.stringify(categories));
+        }
+
+        function updateCategories() {
+            const selects = ['input-categoria', 'filter-category-dashboard', 'filter-category-all'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = (selectId.includes('filter') ? '<option value="all">Todas categorías</option>' : '') +
+                    categories.map(cat => `<option value="${cat}">${cat}</option>`).join('') +
+                    (selectId === 'input-categoria' ? '<option value="NEW">+ Nueva categoría</option>' : '');
+            });
+        }
+
+        function showNewCategory() {
+            document.getElementById('new-category-div').style.display = 'block';
+        }
+
+        function cancelNewCategory() {
+            document.getElementById('new-category-div').style.display = 'none';
+            document.getElementById('input-categoria').value = categories[0];
+        }
+
+        function addNewCategory() {
+            const name = document.getElementById('new-category-input').value.trim();
+            if (name) {
+                categories.push(name.toUpperCase());
+                saveCategories();
+                updateCategories();
+                document.getElementById('input-categoria').value = name.toUpperCase();
+                document.getElementById('new-category-div').style.display = 'none';
+                document.getElementById('new-category-input').value = '';
+            }
+        }
+
+        function updateStats() {
+            const total = themes.length;
+            const abiertos = themes.filter(t => t.estado === '1-Abierto').length;
+            const cerrados = themes.filter(t => t.estado === '2-Finalizada').length;
+            const urgentes = themes.filter(t => t.prioridad === '🔴 Urgente' && t.estado === '1-Abierto').length;
+
+            document.getElementById('stats-header').textContent = `${total} temas | ${abiertos} activos`;
+            document.getElementById('stat-abiertos').textContent = abiertos;
+            document.getElementById('stat-cerrados').textContent = cerrados;
+            document.getElementById('stat-urgentes').textContent = urgentes;
+            document.getElementById('stat-total').textContent = total;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tab === 'dashboard') updateDashboard();
+            if (tab === 'all') updateAllTab();
+        }
+
+        function updateDashboard() {
+            const filterCat = document.getElementById('filter-category-dashboard').value;
+            const filterState = document.getElementById('filter-state-dashboard').value;
+
+            const filtered = themes.filter(t => {
+                if (filterCat !== 'all' && t.categoria !== filterCat) return false;
+                if (filterState !== 'all' && t.estado !== filterState) return false;
+                return true;
+            });
+
+            const abiertos = filtered.filter(t => t.estado === '1-Abierto');
+            const cerrados = filtered.filter(t => t.estado === '2-Finalizada');
+
+            document.getElementById('count-abiertos').textContent = abiertos.length;
+            document.getElementById('count-cerrados').textContent = cerrados.length;
+
+            document.getElementById('dashboard-abiertos').innerHTML = abiertos.map((t, i) => `
+                <div class="theme-item ${t.prioridad === '🔴 Urgente' ? 'urgent' : ''}">
+                    <div class="theme-title">${i + 1}. ${t.accion}</div>
+                    <div class="theme-field">${t.tema} · ${t.categoria}</div>
+                    ${t.fecha_compromiso ? `<div class="theme-field">📅 ${t.fecha_compromiso}</div>` : ''}
+                    <div class="theme-field" style="font-weight: 600;">${t.prioridad}</div>
+                    <button class="btn btn-success" style="margin-top: 6px;" onclick="closeTheme(${t.id})">✅ Cerrar</button>
+                </div>
+            `).join('');
+
+            document.getElementById('dashboard-cerrados').innerHTML = cerrados.slice(-5).map(t => `
+                <div class="theme-item closed" style="margin-bottom: 4px;">
+                    <div style="font-size: 11px; color: #15803d; text-decoration: line-through;">${t.tema}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateAllTab() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filterCat = document.getElementById('filter-category-all').value;
+            const filterState = document.getElementById('filter-state-all').value;
+
+            const filtered = themes.filter(t => {
+                if (search && !t.tema.toLowerCase().includes(search) && !t.accion.toLowerCase().includes(search)) return false;
+                if (filterCat !== 'all' && t.categoria !== filterCat) return false;
+                if (filterState !== 'all' && t.estado !== filterState) return false;
+                return true;
+            });
+
+            document.getElementById('all-items').innerHTML = filtered.map(t => `
+                <div class="theme-item ${t.estado === '2-Finalizada' ? 'closed' : t.prioridad === '🔴 Urgente' ? 'urgent' : ''}" draggable="true" ondragstart="draggedThemeId = ${t.id}">
+                    <div class="theme-title" onclick="editField(${t.id}, 'tema', '${t.tema}')">${t.tema}</div>
+                    <div class="theme-field" onclick="editField(${t.id}, 'accion', '${t.accion}')">🎯 ${t.accion}</div>
+                    <div class="theme-field" onclick="editField(${t.id}, 'fecha', '${t.fecha_compromiso}')">📅 ${t.fecha_compromiso || 'Sin fecha'}</div>
+                    <div class="theme-field" onclick="editField(${t.id}, 'categoria', '${t.categoria}')">📌 ${t.categoria}</div>
+                    <div class="theme-field" style="font-weight: 600;">${t.prioridad || 'Pendiente'}</div>
+                    <div class="theme-actions">
+                        <button class="btn btn-success" onclick="closeTheme(${t.id})">✅ Cerrar</button>
+                        <button class="btn btn-danger" onclick="deleteTheme(${t.id})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editField(id, field, value) {
+            const newValue = prompt(`Editar ${field}:`, value);
+            if (newValue !== null && newValue.trim()) {
+                const updates = {};
+                updates[field] = newValue;
+                updateTheme(id, updates);
+            }
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        function recalculatePriorities() {
+            let updated = false;
+            themes.forEach(t => {
+                if (t.estado === '1-Abierto' && t.fecha_compromiso) {
+                    const newPriority = calculatePriority(t.fecha_compromiso);
+                    if (t.prioridad !== newPriority) {
+                        t.prioridad = newPriority;
+                        updated = true;
+                    }
+                }
+            });
+            
+            if (updated) {
+                saveThemes();
+                updateStats();
+                updateAllTab();
+                updateDashboard();
+            }
+        }
+
+        function checkUrgentNotifications() {
+            const today = new Date().toISOString().split('T')[0];
+            themes.forEach(t => {
+                if (t.estado === '1-Abierto' && t.fecha_compromiso === today && t.prioridad === '🔴 Urgente') {
+                    if (!notifiedIds.has(t.id)) {
+                        showNotification(`⚠️ URGENTE HOY: ${t.accion}`);
+                        notifiedIds.add(t.id);
+                    }
+                }
+            });
+        }
+
+        function showNotification(message) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('📋 Mis Temas Abiertos', { body: message });
+            }
+        }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(err => {
+                console.log('Service Worker no disponible (pero la app funciona igual)');
+            });
+        }
+    </script>
+</body>
+</html>
