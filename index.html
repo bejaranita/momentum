@@ -16,20 +16,17 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: #f5f7fa; }
         .container { max-width: 800px; margin: 0 auto; }
 
-        /* HEADER */
         .header { background: white; border-bottom: 1px solid #e0e0e0; padding: 1rem; position: sticky; top: 0; z-index: 100; text-align: center; }
         .header h1 { font-size: 20px; font-weight: 600; color: #1a1f36; }
         #stats-header { font-size: 12px; color: #666; margin: 2px 0; }
         #sync-status { font-size: 11px; color: #888; margin: 2px 0; }
 
-        /* TABS */
         .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e0e0e0; margin-top: 10px; }
         .tab-btn { flex: 1; padding: 10px 4px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #999; font-size: 13px; font-weight: 600; cursor: pointer; }
         .tab-btn.active { border-bottom-color: #3b82f6; color: #3b82f6; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* CARDS & FORMS */
         .content { padding: 1rem; }
         .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
         .form-group { margin-bottom: 0.75rem; }
@@ -38,7 +35,6 @@
         .form-textarea { min-height: 50px; resize: vertical; }
         .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        /* BUTTONS */
         .btn { padding: 10px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-primary { background: #10b981; color: white; width: 100%; }
         .btn-danger  { background: #dc2626; color: white; }
@@ -47,17 +43,15 @@
         .mic-btn { padding: 6px 10px; background: #e5e7eb; color: #666; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .mic-btn.listening { background: #dc2626; color: white; }
 
-        /* STATS */
         .stats { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
         .stat-card { flex: 1; min-width: 70px; padding: 10px; border-radius: 8px; text-align: center; }
         .stat-value { font-size: 20px; font-weight: 700; }
         .stat-label { font-size: 10px; margin-top: 2px; }
-        .stat-abiertos  { background: #e0f2fe; } .stat-abiertos  .stat-value { color: #0369a1; }
-        .stat-cerrados  { background: #dcfce7; } .stat-cerrados  .stat-value { color: #15803d; }
-        .stat-urgentes  { background: #fef08a; } .stat-urgentes  .stat-value { color: #b45309; }
-        .stat-total     { background: #f3e8ff; } .stat-total     .stat-value { color: #7c3aed; }
+        .stat-abiertos { background: #e0f2fe; } .stat-abiertos .stat-value { color: #0369a1; }
+        .stat-cerrados { background: #dcfce7; } .stat-cerrados .stat-value { color: #15803d; }
+        .stat-urgentes { background: #fef08a; } .stat-urgentes .stat-value { color: #b45309; }
+        .stat-total    { background: #f3e8ff; } .stat-total    .stat-value { color: #7c3aed; }
 
-        /* THEME ITEMS */
         .theme-item { background: white; border: 1px solid #e0e0e0; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 12px; margin-bottom: 10px; cursor: pointer; }
         .theme-item.closed { border-left-color: #10b981; opacity: .75; }
         .theme-item.urgent { border-left-color: #dc2626; }
@@ -66,7 +60,6 @@
         .theme-actions { display: flex; gap: 6px; margin-top: 8px; }
         .theme-actions button { flex: 1; padding: 5px 8px; font-size: 11px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 
-        /* DASHBOARD TABLE */
         .dash-section { margin-bottom: 14px; }
         .dash-header { color: white; padding: 8px 12px; border-radius: 4px 4px 0 0; font-weight: 600; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
         .dash-table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
@@ -75,11 +68,9 @@
         .dash-table tr:last-child td { border-bottom: none; }
         .dash-table tr:hover td { background: #fafafa; }
 
-        /* NEW CATEGORY */
         .new-category-box { background: #e8f5e9; padding: 10px; border-radius: 6px; margin-bottom: 1rem; }
         .new-category-box input { width: 100%; padding: 8px; margin-bottom: 8px; font-size: 12px; border: 1px solid #4caf50; border-radius: 4px; }
 
-        /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 1000; overflow-y: auto; }
         .modal-box { margin: 20px auto; max-width: 500px; background: white; padding: 20px; border-radius: 8px; }
         .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
@@ -105,32 +96,26 @@
         <div id="tab-new" class="tab-content active">
             <div class="card">
                 <h2 style="font-size:15px;font-weight:600;margin-bottom:1rem;">✍️ Nuevo Tema</h2>
-
                 <div class="form-group">
                     <div class="form-label">📝 Tema <button class="mic-btn" id="mic-theme" onclick="startListening('theme')">🎤</button></div>
                     <input id="input-tema" class="form-input" type="text" placeholder="Ej: Revisión médica">
                 </div>
-
                 <div class="form-group">
                     <div class="form-label">🎯 Acción <button class="mic-btn" id="mic-action" onclick="startListening('action')">🎤</button></div>
                     <textarea id="input-accion" class="form-textarea" placeholder="Ej: Llamar a Rímac"></textarea>
                 </div>
-
                 <div class="form-group">
                     <div class="form-label">📅 Fecha <button class="mic-btn" id="mic-date" onclick="startListening('date')">🎤</button></div>
                     <input id="input-fecha" class="form-input" type="date">
                 </div>
-
                 <div class="form-group">
                     <div class="form-label">📝 Próximos pasos <button class="mic-btn" id="mic-notes" onclick="startListening('notes')">🎤</button></div>
                     <textarea id="input-notas" class="form-textarea" placeholder="Próximos pasos..."></textarea>
                 </div>
-
                 <div class="form-group">
                     <label class="form-label">📌 Categoría</label>
                     <select id="input-categoria" class="form-select" onchange="if(this.value==='NEW') showNewCategory()"></select>
                 </div>
-
                 <div id="new-category-div" style="display:none;" class="new-category-box">
                     <input id="new-category-input" type="text" placeholder="Nombre de categoría">
                     <div style="display:flex;gap:8px;">
@@ -138,7 +123,6 @@
                         <button onclick="cancelNewCategory()" style="padding:8px 12px;background:#999;color:white;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">Cancelar</button>
                     </div>
                 </div>
-
                 <button class="btn btn-primary" onclick="addTheme()">✅ Guardar</button>
             </div>
         </div>
@@ -160,10 +144,10 @@
             </div>
             <div id="dashboard-abiertos"></div>
             <div class="stats">
-                <div class="stat-card stat-abiertos">  <div class="stat-value" id="stat-abiertos">0</div>  <div class="stat-label">Abiertos</div></div>
-                <div class="stat-card stat-cerrados">  <div class="stat-value" id="stat-cerrados">0</div>  <div class="stat-label">Cerrados</div></div>
-                <div class="stat-card stat-urgentes">  <div class="stat-value" id="stat-urgentes">0</div>  <div class="stat-label">Urgentes</div></div>
-                <div class="stat-card stat-total">     <div class="stat-value" id="stat-total">0</div>     <div class="stat-label">Total</div></div>
+                <div class="stat-card stat-abiertos"><div class="stat-value" id="stat-abiertos">0</div><div class="stat-label">Abiertos</div></div>
+                <div class="stat-card stat-cerrados"><div class="stat-value" id="stat-cerrados">0</div><div class="stat-label">Cerrados</div></div>
+                <div class="stat-card stat-urgentes"><div class="stat-value" id="stat-urgentes">0</div><div class="stat-label">Urgentes</div></div>
+                <div class="stat-card stat-total">   <div class="stat-value" id="stat-total">0</div>   <div class="stat-label">Total</div></div>
             </div>
         </div>
 
@@ -188,8 +172,8 @@
             <div id="all-items"></div>
         </div>
 
-    </div><!-- /content -->
-</div><!-- /container -->
+    </div>
+</div>
 
 <!-- Modal de edición -->
 <div id="edit-modal" class="modal-overlay">
@@ -215,9 +199,6 @@
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRLeB42hPRaEzwnmUCl3Hmd3oGjYyfjvPVoXLy-Quxw3magzbDxpkXiLGSeDL5y3l4/exec";
 
 let themes = [];
@@ -226,32 +207,20 @@ let recognition = null;
 let editingIndex = null;
 let notifiedIds = new Set();
 
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     initSpeech();
     loadFromLocalFirst();
     requestNotificationPermission();
     setInterval(recalculatePriorities, 60000);
     setInterval(checkUrgentNotifications, 60000);
-    setInterval(loadThemesFromSheets, 30000); // Polling cada 30s para multi-device
+    setInterval(loadThemesFromSheets, 30000);
 });
 
-// ─────────────────────────────────────────────
-// CARGA: local primero, luego Sheets
-// ─────────────────────────────────────────────
 function loadFromLocalFirst() {
-    const saved = localStorage.getItem('themes_sandra');
-    if (saved) {
-        try { themes = JSON.parse(saved); } catch(e) {}
-    }
-    const savedCats = localStorage.getItem('categories_sandra');
-    if (savedCats) {
-        try { categories = JSON.parse(savedCats); } catch(e) {}
-    }
+    try { const s = localStorage.getItem('themes_sandra');    if (s) themes     = JSON.parse(s); } catch(e){}
+    try { const c = localStorage.getItem('categories_sandra'); if (c) categories = JSON.parse(c); } catch(e){}
     refreshUI();
-    loadThemesFromSheets(); // luego trae la verdad
+    loadThemesFromSheets();
 }
 
 function loadThemesFromSheets() {
@@ -260,10 +229,7 @@ function loadThemesFromSheets() {
         .then(r => r.json())
         .then(data => {
             if (data.ok && data.themes && data.themes.length > 0) {
-                themes = data.themes.map(t => ({
-                    ...t,
-                    prioridad: calculatePriority(t.fecha_compromiso)
-                }));
+                themes = data.themes.map(t => ({ ...t, prioridad: calculatePriority(t.fecha_compromiso) }));
                 saveLocal();
                 extractCategories();
                 refreshUI();
@@ -275,9 +241,6 @@ function loadThemesFromSheets() {
         .catch(() => setStatus('📵 Sin conexión — datos locales'));
 }
 
-// ─────────────────────────────────────────────
-// ESCRITURA A SHEETS
-// ─────────────────────────────────────────────
 function postToSheets(payload) {
     setStatus('⏳ Guardando...');
     fetch(SCRIPT_URL, {
@@ -286,25 +249,18 @@ function postToSheets(payload) {
         body: JSON.stringify(payload)
     })
     .then(r => r.json())
-    .then(data => {
-        setStatus(data.ok ? '✅ Guardado ' + fmtTime() : '⚠️ ' + data.error);
-    })
+    .then(data => setStatus(data.ok ? '✅ Guardado ' + fmtTime() : '⚠️ ' + data.error))
     .catch(() => setStatus('📵 Sin red — guardado localmente'));
 }
 
-// ─────────────────────────────────────────────
-// CRUD
-// ─────────────────────────────────────────────
 function addTheme() {
     const tema   = document.getElementById('input-tema').value.trim();
     const accion = document.getElementById('input-accion').value.trim();
     if (!tema || !accion) { alert('Completa Tema y Acción'); return; }
-
     const fecha = document.getElementById('input-fecha').value;
     const t = {
         id:               String(Date.now()),
-        tema,
-        accion,
+        tema, accion,
         categoria:        document.getElementById('input-categoria').value,
         estado:           '1-Abierto',
         fecha_creacion:   new Date().toLocaleDateString('es-PE'),
@@ -313,27 +269,23 @@ function addTheme() {
         notas:            document.getElementById('input-notas').value,
         quien:            'Sandra'
     };
-
     themes.push(t);
     saveLocal();
     refreshUI();
-    ['input-tema','input-accion','input-fecha','input-notas'].forEach(id => {
-        document.getElementById(id).value = '';
-    });
+    ['input-tema','input-accion','input-fecha','input-notas'].forEach(id => document.getElementById(id).value = '');
     postToSheets({ action: 'add', theme: t });
 }
 
 function closeTheme(index) {
     themes[index].estado = '2-Finalizada';
-    saveLocal();
-    refreshUI();
+    saveLocal(); refreshUI();
     postToSheets({ action: 'update', theme: themes[index] });
 }
 
 function saveEditedTheme() {
     if (editingIndex === null) return;
     const fecha = document.getElementById('edit-fecha').value;
-    themes[editingIndex] = {
+    const updated = {
         ...themes[editingIndex],
         tema:             document.getElementById('edit-tema').value,
         accion:           document.getElementById('edit-accion').value,
@@ -343,25 +295,19 @@ function saveEditedTheme() {
         prioridad:        calculatePriority(fecha),
         notas:            document.getElementById('edit-notas').value,
     };
-    saveLocal();
-    refreshUI();
-    closeEditModal();
-    postToSheets({ action: 'update', theme: themes[editingIndex] });
+    themes[editingIndex] = updated;
+    saveLocal(); refreshUI(); closeEditModal();
+    postToSheets({ action: 'update', theme: updated });
 }
 
 function deleteTheme() {
     if (editingIndex === null || !confirm('¿Eliminar este tema?')) return;
     const id = themes[editingIndex].id;
     themes.splice(editingIndex, 1);
-    saveLocal();
-    refreshUI();
-    closeEditModal();
+    saveLocal(); refreshUI(); closeEditModal();
     postToSheets({ action: 'delete', id });
 }
 
-// ─────────────────────────────────────────────
-// MODAL
-// ─────────────────────────────────────────────
 function openEditModal(index) {
     editingIndex = index;
     const t = themes[index];
@@ -370,8 +316,8 @@ function openEditModal(index) {
     document.getElementById('edit-estado').value = t.estado || '1-Abierto';
     document.getElementById('edit-fecha').value  = t.fecha_compromiso || '';
     document.getElementById('edit-notas').value  = t.notas  || '';
-    const catSel = document.getElementById('edit-categoria');
-    catSel.innerHTML = categories.map(c => `<option value="${c}" ${c===t.categoria?'selected':''}>${c}</option>`).join('');
+    document.getElementById('edit-categoria').innerHTML =
+        categories.map(c => `<option value="${c}" ${c===t.categoria?'selected':''}>${c}</option>`).join('');
     document.getElementById('edit-modal').style.display = 'block';
 }
 
@@ -380,57 +326,45 @@ function closeEditModal() {
     editingIndex = null;
 }
 
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
 function refreshUI() {
-    updateStats();
-    renderDashboard();
-    renderAllTab();
-    updateCategoryDropdowns();
+    updateStats(); renderDashboard(); renderAllTab(); updateCategoryDropdowns();
 }
 
 function updateStats() {
-    const abiertos = themes.filter(t => t.estado === '1-Abierto').length;
-    const cerrados  = themes.filter(t => t.estado === '2-Finalizada').length;
-    const urgentes  = themes.filter(t => t.prioridad === '🔴 Urgente' && t.estado === '1-Abierto').length;
-    document.getElementById('stats-header').textContent = `${themes.length} temas | ${abiertos} activos`;
-    document.getElementById('stat-abiertos').textContent = abiertos;
-    document.getElementById('stat-cerrados').textContent = cerrados;
-    document.getElementById('stat-urgentes').textContent = urgentes;
+    const ab = themes.filter(t => t.estado === '1-Abierto').length;
+    const ce = themes.filter(t => t.estado === '2-Finalizada').length;
+    const ur = themes.filter(t => t.prioridad === '🔴 Urgente' && t.estado === '1-Abierto').length;
+    document.getElementById('stats-header').textContent = `${themes.length} temas | ${ab} activos`;
+    document.getElementById('stat-abiertos').textContent = ab;
+    document.getElementById('stat-cerrados').textContent = ce;
+    document.getElementById('stat-urgentes').textContent = ur;
     document.getElementById('stat-total').textContent    = themes.length;
 }
 
 function renderDashboard() {
-    const filterCat = document.getElementById('filter-category-dashboard').value;
-    const open = themes.filter(t => t.estado === '1-Abierto' && (filterCat === 'all' || t.categoria === filterCat));
-
+    const cat = document.getElementById('filter-category-dashboard').value;
+    const open = themes.filter(t => t.estado === '1-Abierto' && (cat === 'all' || t.categoria === cat));
     const byDate = arr => arr.slice().sort((a,b) => new Date(a.fecha_compromiso||'9999-12-31') - new Date(b.fecha_compromiso||'9999-12-31'));
-
     const groups = [
         { items: byDate(open.filter(t => t.prioridad === '🔴 Urgente')),   icon:'🔴', label:'URGENTES',   color:'#dc2626' },
         { items: byDate(open.filter(t => t.prioridad === '🟠 Importante')), icon:'🟠', label:'IMPORTANTES', color:'#ea8232' },
         { items: byDate(open.filter(t => t.prioridad === '🟡 Pendiente')),  icon:'🟡', label:'PENDIENTES',  color:'#eab308' },
         { items: byDate(open.filter(t => t.prioridad === 'Vencido')),       icon:'⚫', label:'VENCIDOS',    color:'#666'    },
     ];
-
     document.getElementById('count-dashboard').textContent = open.length;
 
     const timeInfo = items => {
         const today = new Date(); today.setHours(0,0,0,0);
         let min = Infinity;
-        items.forEach(t => { if(t.fecha_compromiso){ const d = Math.ceil((new Date(t.fecha_compromiso)-today)/(86400000)); min=Math.min(min,d); } });
+        items.forEach(t => { if(t.fecha_compromiso){ const d=Math.ceil((new Date(t.fecha_compromiso)-today)/86400000); min=Math.min(min,d); }});
         if(!isFinite(min)) return '';
-        if(min===0) return 'Vence HOY';
-        if(min===1) return 'Vence mañana';
-        if(min>0 && min<=7)  return `${min} días`;
-        if(min>7  && min<=30) return `${Math.ceil(min/7)} semanas`;
-        if(min<0) return 'Vencido';
-        return '';
+        if(min===0) return 'Vence HOY'; if(min===1) return 'Vence mañana';
+        if(min>0&&min<=7) return `${min} días`; if(min>7&&min<=30) return `${Math.ceil(min/7)} semanas`;
+        if(min<0) return 'Vencido'; return '';
     };
 
     let html = '';
-    groups.forEach(({items, icon, label, color}) => {
+    groups.forEach(({items,icon,label,color}) => {
         if(!items.length) return;
         html += `<div class="dash-section">
             <div class="dash-header" style="background:${color};">
@@ -440,13 +374,11 @@ function renderDashboard() {
             <table class="dash-table">
                 <thead><tr><th style="width:35%">Tema</th><th>Acción</th></tr></thead>
                 <tbody>${items.map(t => {
-                    const idx = themes.indexOf(t);
-                    return `<tr onclick="openEditModal(${idx})"><td>${t.tema}</td><td style="color:#666;">${t.accion}</td></tr>`;
+                    const i = themes.indexOf(t);
+                    return `<tr onclick="openEditModal(${i})"><td>${t.tema}</td><td style="color:#666;">${t.accion}</td></tr>`;
                 }).join('')}</tbody>
-            </table>
-        </div>`;
+            </table></div>`;
     });
-
     document.getElementById('dashboard-abiertos').innerHTML = html || '<div style="text-align:center;color:#999;padding:20px;">Sin acciones abiertas 🎉</div>';
 }
 
@@ -454,189 +386,138 @@ function renderAllTab() {
     const q   = document.getElementById('search-input').value.toLowerCase();
     const cat = document.getElementById('filter-category-all').value;
     const st  = document.getElementById('filter-state-all').value;
-
     let filtered = themes
-        .map((t, i) => ({...t, _i: i}))
+        .map((t,i) => ({...t,_i:i}))
         .filter(t => {
-            if (q   && !t.tema.toLowerCase().includes(q) && !t.accion.toLowerCase().includes(q)) return false;
-            if (cat !== 'all' && t.categoria !== cat) return false;
-            if (st  !== 'all' && t.estado    !== st)  return false;
+            if(q && !t.tema.toLowerCase().includes(q) && !t.accion.toLowerCase().includes(q)) return false;
+            if(cat!=='all' && t.categoria!==cat) return false;
+            if(st!=='all'  && t.estado!==st)     return false;
             return true;
         })
         .sort((a,b) => new Date(a.fecha_compromiso||'9999-12-31') - new Date(b.fecha_compromiso||'9999-12-31'));
-
     document.getElementById('count-all').textContent = filtered.length;
-
     document.getElementById('all-items').innerHTML = filtered.map(t => `
         <div class="theme-item ${t.estado==='2-Finalizada'?'closed':t.prioridad==='🔴 Urgente'?'urgent':''}" onclick="openEditModal(${t._i})">
             <div class="theme-title">${t.tema}</div>
             <div class="theme-field">🎯 ${t.accion}</div>
-            <div class="theme-field">📅 ${t.fecha_compromiso || 'Sin fecha'} &nbsp;·&nbsp; 📌 ${t.categoria} &nbsp;·&nbsp; <strong>${t.prioridad||'Pendiente'}</strong></div>
+            <div class="theme-field">📅 ${t.fecha_compromiso||'Sin fecha'} · 📌 ${t.categoria} · <strong>${t.prioridad||'Pendiente'}</strong></div>
             <div class="theme-actions">
                 <button class="btn-success" onclick="event.stopPropagation();closeTheme(${t._i})">✅ Cerrar</button>
             </div>
         </div>`).join('');
 }
 
-// ─────────────────────────────────────────────
-// CATEGORÍAS
-// ─────────────────────────────────────────────
 function extractCategories() {
-    const unique = [...new Set(themes.map(t => t.categoria).filter(Boolean))].sort();
-    if (unique.length) {
-        categories = unique;
-        localStorage.setItem('categories_sandra', JSON.stringify(categories));
-        updateCategoryDropdowns();
-    }
+    const u = [...new Set(themes.map(t=>t.categoria).filter(Boolean))].sort();
+    if(u.length){ categories=u; localStorage.setItem('categories_sandra',JSON.stringify(categories)); updateCategoryDropdowns(); }
 }
 
 function updateCategoryDropdowns() {
-    const opts = categories.map(c => `<option value="${c}">${c}</option>`).join('');
-    const filterOpt = '<option value="all">Todas categorías</option>';
-
+    const opts = categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+    const fo = '<option value="all">Todas categorías</option>';
     document.getElementById('input-categoria').innerHTML = opts + '<option value="NEW">+ Nueva categoría</option>';
-    document.getElementById('filter-category-dashboard').innerHTML = filterOpt + opts;
-    document.getElementById('filter-category-all').innerHTML       = filterOpt + opts;
+    document.getElementById('filter-category-dashboard').innerHTML = fo + opts;
+    document.getElementById('filter-category-all').innerHTML       = fo + opts;
 }
 
-function showNewCategory() {
-    document.getElementById('new-category-div').style.display = 'block';
-}
-function cancelNewCategory() {
-    document.getElementById('new-category-div').style.display = 'none';
-    document.getElementById('input-categoria').value = categories[0];
-}
+function showNewCategory()   { document.getElementById('new-category-div').style.display='block'; }
+function cancelNewCategory() { document.getElementById('new-category-div').style.display='none'; document.getElementById('input-categoria').value=categories[0]; }
 function addNewCategory() {
     const name = document.getElementById('new-category-input').value.trim().toUpperCase();
-    if (name && !categories.includes(name)) {
-        categories.push(name);
-        localStorage.setItem('categories_sandra', JSON.stringify(categories));
-        updateCategoryDropdowns();
-        document.getElementById('input-categoria').value = name;
-    }
-    document.getElementById('new-category-div').style.display = 'none';
-    document.getElementById('new-category-input').value = '';
+    if(name && !categories.includes(name)){ categories.push(name); localStorage.setItem('categories_sandra',JSON.stringify(categories)); updateCategoryDropdowns(); document.getElementById('input-categoria').value=name; }
+    document.getElementById('new-category-div').style.display='none';
+    document.getElementById('new-category-input').value='';
 }
 
-// ─────────────────────────────────────────────
-// VOZ
-// ─────────────────────────────────────────────
 function initSpeech() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    recognition = new SR();
-    recognition.lang = 'es-ES';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    if(!SR) return;
+    recognition = new SR(); recognition.lang='es-ES'; recognition.continuous=false; recognition.interimResults=false;
 }
 
 function startListening(field) {
-    if (!recognition) { alert('Tu navegador no soporta voz'); return; }
-    const btn = document.getElementById('mic-' + field);
-    btn.classList.add('listening'); btn.textContent = '🎙️';
-
+    if(!recognition){ alert('Tu navegador no soporta voz'); return; }
+    const btn = document.getElementById('mic-'+field);
+    btn.classList.add('listening'); btn.textContent='🎙️';
     recognition.onresult = e => {
         const text = Array.from(e.results).map(r=>r[0].transcript).join('').trim();
-        if (field==='theme')  document.getElementById('input-tema').value   = text;
-        if (field==='action') document.getElementById('input-accion').value = text;
-        if (field==='date')   document.getElementById('input-fecha').value  = parseNaturalDate(text);
-        if (field==='notes')  document.getElementById('input-notas').value  = text;
-        btn.classList.remove('listening'); btn.textContent = '🎤';
+        if(field==='theme')  document.getElementById('input-tema').value   = text;
+        if(field==='action') document.getElementById('input-accion').value = text;
+        if(field==='date')   document.getElementById('input-fecha').value  = parseNaturalDate(text);
+        if(field==='notes')  document.getElementById('input-notas').value  = text;
+        btn.classList.remove('listening'); btn.textContent='🎤';
     };
-    recognition.onerror = () => { btn.classList.remove('listening'); btn.textContent = '🎤'; };
+    recognition.onerror = () => { btn.classList.remove('listening'); btn.textContent='🎤'; };
     recognition.start();
 }
 
-// ─────────────────────────────────────────────
-// UTILIDADES
-// ─────────────────────────────────────────────
 function calculatePriority(dateStr) {
-    if (!dateStr) return 'Pendiente';
+    if(!dateStr) return 'Pendiente';
     const today = new Date(); today.setHours(0,0,0,0);
-    const d = Math.ceil((new Date(dateStr) - today) / 86400000);
-    if (d <= 0)  return 'Vencido';
-    if (d === 1) return '🔴 Urgente';
-    if (d <= 7)  return '🟠 Importante';
-    if (d <= 30) return '🟡 Pendiente';
+    const d = Math.ceil((new Date(dateStr)-today)/86400000);
+    if(d<=0) return 'Vencido'; if(d===1) return '🔴 Urgente';
+    if(d<=7) return '🟠 Importante'; if(d<=30) return '🟡 Pendiente';
     return '⚪ Backlog';
 }
 
 function parseNaturalDate(text) {
-    const l = text.toLowerCase();
-    const d = new Date();
-    if (l.includes('mañana'))        d.setDate(d.getDate()+1);
-    else if (l.includes('pasado'))   d.setDate(d.getDate()+2);
-    else if (l.includes('dos sema')) d.setDate(d.getDate()+14);
-    else if (l.includes('semana'))   d.setDate(d.getDate()+7);
-    else if (l.includes('mes'))      d.setMonth(d.getMonth()+1);
+    const l=text.toLowerCase(), d=new Date();
+    if(l.includes('mañana'))        d.setDate(d.getDate()+1);
+    else if(l.includes('pasado'))   d.setDate(d.getDate()+2);
+    else if(l.includes('dos sema')) d.setDate(d.getDate()+14);
+    else if(l.includes('semana'))   d.setDate(d.getDate()+7);
+    else if(l.includes('mes'))      d.setMonth(d.getMonth()+1);
     return d.toISOString().split('T')[0];
 }
 
-function saveLocal() {
-    localStorage.setItem('themes_sandra', JSON.stringify(themes));
-}
-
-function setStatus(msg) {
-    const el = document.getElementById('sync-status');
-    if (el) el.textContent = msg;
-}
-
-function fmtTime() {
-    return new Date().toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'});
-}
+function saveLocal() { localStorage.setItem('themes_sandra', JSON.stringify(themes)); }
+function setStatus(msg) { const el=document.getElementById('sync-status'); if(el) el.textContent=msg; }
+function fmtTime() { return new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); }
 
 function switchTab(tab, btn) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
     btn.classList.add('active');
 }
 
 function downloadCSV() {
-    if (!themes.length) { alert('No hay temas'); return; }
-    const headers = ['TEMA','ACCION_CLAVE','CATEGORIA','ESTADO','URGENCIA','FECHA_CREACION','FECHA_COMPROMISO','NOTAS','QUIÉN','ID'];
-    const rows = themes.map(t => headers.map(h => {
-        const map = {TEMA:t.tema,ACCION_CLAVE:t.accion,CATEGORIA:t.categoria,ESTADO:t.estado,
-            URGENCIA:t.prioridad,FECHA_CREACION:t.fecha_creacion,FECHA_COMPROMISO:t.fecha_compromiso,
-            NOTAS:t.notas,QUIÉN:t.quien||'Sandra',ID:t.id};
-        return `"${(map[h]||'').toString().replace(/"/g,'""')}"`;
+    if(!themes.length){ alert('No hay temas'); return; }
+    const headers=['TEMA','ACCION_CLAVE','CATEGORIA','ESTADO','URGENCIA','FECHA_CREACION','FECHA_COMPROMISO','NOTAS','ID'];
+    const rows=themes.map(t=>headers.map(h=>{
+        const m={TEMA:t.tema,ACCION_CLAVE:t.accion,CATEGORIA:t.categoria,ESTADO:t.estado,URGENCIA:t.prioridad,
+            FECHA_CREACION:t.fecha_creacion,FECHA_COMPROMISO:t.fecha_compromiso,NOTAS:t.notas,ID:t.id};
+        return `"${(m[h]||'').toString().replace(/"/g,'""')}"`;
     }));
-    const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
-    a.download = `momentum-temas-${new Date().toISOString().split('T')[0]}.csv`;
+    const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    a.download=`momentum-temas-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
 }
 
 function recalculatePriorities() {
-    let changed = false;
-    themes.forEach(t => {
-        if (t.estado === '1-Abierto' && t.fecha_compromiso) {
-            const p = calculatePriority(t.fecha_compromiso);
-            if (t.prioridad !== p) { t.prioridad = p; changed = true; }
-        }
-    });
-    if (changed) { saveLocal(); refreshUI(); }
+    let ch=false;
+    themes.forEach(t=>{ if(t.estado==='1-Abierto'&&t.fecha_compromiso){ const p=calculatePriority(t.fecha_compromiso); if(t.prioridad!==p){t.prioridad=p;ch=true;} }});
+    if(ch){ saveLocal(); refreshUI(); }
 }
 
 function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+    if('Notification' in window && Notification.permission==='default') Notification.requestPermission();
 }
 
 function checkUrgentNotifications() {
-    const today = new Date().toISOString().split('T')[0];
-    themes.forEach(t => {
-        if (t.estado === '1-Abierto' && t.fecha_compromiso === today && !notifiedIds.has(t.id)) {
-            if ('Notification' in window && Notification.permission === 'granted')
-                new Notification('📋 Momentum', { body: `⚠️ URGENTE HOY: ${t.accion}` });
+    const today=new Date().toISOString().split('T')[0];
+    themes.forEach(t=>{
+        if(t.estado==='1-Abierto'&&t.fecha_compromiso===today&&!notifiedIds.has(t.id)){
+            if('Notification' in window && Notification.permission==='granted')
+                new Notification('📋 Momentum',{body:`⚠️ URGENTE HOY: ${t.accion}`});
             notifiedIds.add(t.id);
         }
     });
 }
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
