@@ -53,7 +53,9 @@
         .stat-total    { background: #f3e8ff; } .stat-total    .stat-value { color: #7c3aed; }
 
         .theme-item { background: white; border: 1px solid #e0e0e0; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 12px; margin-bottom: 10px; cursor: pointer; }
-        .theme-item.closed { border-left-color: #10b981; opacity: .75; }
+        .theme-item.closed { border-left-color: #10b981; background: #f0fdf4; }
+        .theme-item.closed .theme-title { text-decoration: line-through; color: #6b7280; }
+        .closed-badge { display: inline-block; background: #10b981; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 4px; }
         .theme-item.urgent { border-left-color: #dc2626; }
         .theme-title { font-size: 13px; font-weight: 600; color: #1a1f36; margin-bottom: 4px; }
         .theme-field { font-size: 11px; color: #666; margin-top: 4px; }
@@ -400,7 +402,8 @@ function renderAllTab() {
         <div class="theme-item ${t.estado==='2-Finalizada'?'closed':t.prioridad==='🔴 Urgente'?'urgent':''}" onclick="openEditModal(${t._i})">
             <div class="theme-title">${t.tema}</div>
             <div class="theme-field">🎯 ${t.accion}</div>
-            <div class="theme-field">📅 ${t.fecha_compromiso||'Sin fecha'} · 📌 ${t.categoria} · <strong>${t.prioridad||'Pendiente'}</strong></div>
+            <div class="theme-field">📅 ${t.fecha_compromiso||'Sin fecha'} · 📌 ${t.categoria}${t.estado!=='2-Finalizada' ? ' · <strong>'+t.prioridad+'</strong>' : ''}</div>
+        ${t.estado==='2-Finalizada' ? '<span class="closed-badge">✅ Cerrado</span>' : ''}
             <div class="theme-actions">
                 <button class="btn-success" onclick="event.stopPropagation();closeTheme(${t._i})">✅ Cerrar</button>
             </div>
