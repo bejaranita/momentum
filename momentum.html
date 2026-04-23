@@ -394,11 +394,55 @@
         function loadThemes() {
             const saved = localStorage.getItem('themes_sandra');
             if (saved) themes = JSON.parse(saved);
+            
+            // Intentar cargar de Google Sheets
+            loadThemesFromSheets();
+            
             updateStats();
             updateAllTab();
             updateDashboard();
             
             document.getElementById('sync-status').textContent = '📱 Cargado';
+        }
+
+        function loadThemesFromSheets() {
+            document.getElementById('sync-status').textContent = '⏳ Sincronizando...';
+            
+            fetch(SCRIPT_URL + '?action=read')
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        // Mapear datos de Google Sheets a nuestro formato
+                        themes = data.map(row => ({
+                            tema: row.TEMA || '',
+                            accion: row.ACCION_CLAVE || '',
+                            categoria: row.CATEGORIA || 'LABORAL',
+                            estado: row.ESTADO || '1-Abierto',
+                            prioridad: calculatePriority(row.FECHA_COMPROMISO) || 'Pendiente',
+                            fecha_creacion: row.FECHA_CREACION || new Date().toLocaleDateString('es-PE'),
+                            fecha_compromiso: row.FECHA_COMPROMISO || '',
+                            notas: row.NOTAS || '',
+                            quien: row.QUIÉN || 'Sandra'
+                        })).filter(t => t.tema); // Solo temas válidos
+                        
+                        // Guardar en localStorage
+                        saveThemes();
+                        
+                        // Actualizar todas las vistas
+                        updateStats();
+                        updateAllTab();
+                        updateDashboard();
+                        
+                        // Cargar y actualizar categorías
+                        loadCategoriesFromSheets();
+                        
+                        document.getElementById('sync-status').textContent = '✅ Sincronizado';
+                    }
+                })
+                .catch(error => {
+                    console.log('Error cargando temas:', error);
+                    document.getElementById('sync-status').textContent = '⚠️ Error en sincronización';
+                });
         }
 
         function syncWithSheets() {
@@ -425,7 +469,8 @@
                     if (data.categories && data.categories.length > 0) {
                         categories = data.categories;
                         localStorage.setItem('categories_sandra', JSON.stringify(categories));
-                        updateCategories();
+                        updateCategories(); // Actualizar dropdowns
+                        console.log('Categorías actualizadas:', categories);
                     }
                 })
                 .catch(error => {
