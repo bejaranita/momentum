@@ -194,6 +194,7 @@
                             <option value="2-Finalizada">Cerrados</option>
                         </select>
                     </div>
+                    <button class="btn btn-primary" onclick="downloadCSV()" style="margin-top: 10px; width: 100%;">📥 Descargar CSV</button>
                 </div>
 
                 <div class="section-title abiertos">🔴 Abiertos (<span id="count-abiertos">0</span>)</div>
@@ -391,6 +392,47 @@
             localStorage.setItem('themes_sandra', JSON.stringify(themes));
         }
 
+        function downloadCSV() {
+            if (themes.length === 0) {
+                alert('No hay temas para descargar');
+                return;
+            }
+
+            // Headers del CSV
+            const headers = ['TEMA', 'ACCION_CLAVE', 'CATEGORIA', 'ESTADO', 'URGENCIA', 'FECHA_CREACION', 'FECHA_COMPROMISO', 'NOTAS', 'QUIÉN'];
+            
+            // Convertir temas a filas CSV
+            const rows = themes.map(t => [
+                `"${(t.tema || '').replace(/"/g, '""')}"`,
+                `"${(t.accion || '').replace(/"/g, '""')}"`,
+                `"${(t.categoria || '').replace(/"/g, '""')}"`,
+                `"${(t.estado || '').replace(/"/g, '""')}"`,
+                `"${(t.prioridad || '').replace(/"/g, '""')}"`,
+                `"${(t.fecha_creacion || '').replace(/"/g, '""')}"`,
+                `"${(t.fecha_compromiso || '').replace(/"/g, '""')}"`,
+                `"${(t.notas || '').replace(/"/g, '""')}"`,
+                `"${(t.quien || 'Sandra').replace(/"/g, '""')}"`
+            ]);
+
+            // Construir CSV
+            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+
+            // Crear blob y descargar
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `momentum-temas-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`✅ CSV descargado: ${themes.length} temas`);
+        }
+
         function loadThemes() {
             const saved = localStorage.getItem('themes_sandra');
             if (saved) themes = JSON.parse(saved);
@@ -463,19 +505,20 @@
         }
 
         function loadCategoriesFromSheets() {
-            fetch(SCRIPT_URL + '?action=categories')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.categories && data.categories.length > 0) {
-                        categories = data.categories;
-                        localStorage.setItem('categories_sandra', JSON.stringify(categories));
-                        updateCategories(); // Actualizar dropdowns
-                        console.log('Categorías actualizadas:', categories);
-                    }
-                })
-                .catch(error => {
-                    console.log('No se pudieron cargar categorías de Google Sheets, usando locales');
-                });
+            // Extraer categorías únicas de los temas cargados
+            const uniqueCategories = new Set();
+            themes.forEach(t => {
+                if (t.categoria) {
+                    uniqueCategories.add(t.categoria);
+                }
+            });
+            
+            if (uniqueCategories.size > 0) {
+                categories = Array.from(uniqueCategories).sort();
+                localStorage.setItem('categories_sandra', JSON.stringify(categories));
+                updateCategories();
+                console.log('Categorías actualizadas desde temas:', categories);
+            }
         }
 
         function saveCategories() {
@@ -575,7 +618,7 @@
             const filterCat = document.getElementById('filter-category-all').value;
             const filterState = document.getElementById('filter-state-all').value;
 
-            const filtered = themes.filter(t => {
+            const filtered = themes.map((t, index) => ({ ...t, _index: index })).filter(t => {
                 if (search && !t.tema.toLowerCase().includes(search) && !t.accion.toLowerCase().includes(search)) return false;
                 if (filterCat !== 'all' && t.categoria !== filterCat) return false;
                 if (filterState !== 'all' && t.estado !== filterState) return false;
@@ -583,27 +626,17 @@
             });
 
             document.getElementById('all-items').innerHTML = filtered.map(t => `
-                <div class="theme-item ${t.estado === '2-Finalizada' ? 'closed' : t.prioridad === '🔴 Urgente' ? 'urgent' : ''}" draggable="true" ondragstart="draggedThemeId = ${t.id}">
-                    <div class="theme-title" onclick="editField(${t.id}, 'tema', '${t.tema}')">${t.tema}</div>
-                    <div class="theme-field" onclick="editField(${t.id}, 'accion', '${t.accion}')">🎯 ${t.accion}</div>
-                    <div class="theme-field" onclick="editField(${t.id}, 'fecha', '${t.fecha_compromiso}')">📅 ${t.fecha_compromiso || 'Sin fecha'}</div>
-                    <div class="theme-field" onclick="editField(${t.id}, 'categoria', '${t.categoria}')">📌 ${t.categoria}</div>
+                <div class="theme-item ${t.estado === '2-Finalizada' ? 'closed' : t.prioridad === '🔴 Urgente' ? 'urgent' : ''}" style="cursor: pointer;" onclick="openEditModal(${t._index})">
+                    <div class="theme-title">${t.tema}</div>
+                    <div class="theme-field">🎯 ${t.accion}</div>
+                    <div class="theme-field">📅 ${t.fecha_compromiso || 'Sin fecha'}</div>
+                    <div class="theme-field">📌 ${t.categoria}</div>
                     <div class="theme-field" style="font-weight: 600;">${t.prioridad || 'Pendiente'}</div>
                     <div class="theme-actions">
-                        <button class="btn btn-success" onclick="closeTheme(${t.id})">✅ Cerrar</button>
-                        <button class="btn btn-danger" onclick="deleteTheme(${t.id})">✕</button>
+                        <button class="btn btn-success" onclick="event.stopPropagation(); closeTheme(${t._index})">✅ Cerrar</button>
                     </div>
                 </div>
             `).join('');
-        }
-
-        function editField(id, field, value) {
-            const newValue = prompt(`Editar ${field}:`, value);
-            if (newValue !== null && newValue.trim()) {
-                const updates = {};
-                updates[field] = newValue;
-                updateTheme(id, updates);
-            }
         }
 
         function requestNotificationPermission() {
@@ -654,6 +687,109 @@
                 console.log('Service Worker no disponible (pero la app funciona igual)');
             });
         }
+
+        // Modal de edición
+        let editingTheme = null;
+
+        function openEditModal(index) {
+            editingTheme = index;
+            const t = themes[index];
+            
+            document.getElementById('edit-tema').value = t.tema;
+            document.getElementById('edit-accion').value = t.accion;
+            document.getElementById('edit-estado').value = t.estado;
+            document.getElementById('edit-fecha').value = t.fecha_compromiso;
+            document.getElementById('edit-notas').value = t.notas;
+            
+            // Llenar dropdown de categorías
+            const catSelect = document.getElementById('edit-categoria');
+            catSelect.innerHTML = categories.map(cat => `<option value="${cat}" ${cat === t.categoria ? 'selected' : ''}>${cat}</option>`).join('');
+            
+            document.getElementById('edit-modal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            editingTheme = null;
+        }
+
+        function saveEditedTheme() {
+            if (editingTheme !== null) {
+                themes[editingTheme] = {
+                    tema: document.getElementById('edit-tema').value,
+                    accion: document.getElementById('edit-accion').value,
+                    categoria: document.getElementById('edit-categoria').value,
+                    estado: document.getElementById('edit-estado').value,
+                    prioridad: calculatePriority(document.getElementById('edit-fecha').value),
+                    fecha_creacion: themes[editingTheme].fecha_creacion,
+                    fecha_compromiso: document.getElementById('edit-fecha').value,
+                    notas: document.getElementById('edit-notas').value,
+                    quien: themes[editingTheme].quien
+                };
+                
+                saveThemes();
+                updateStats();
+                updateAllTab();
+                updateDashboard();
+                closeEditModal();
+            }
+        }
+
+        function deleteTheme() {
+            if (editingTheme !== null && confirm('¿Estás segura de eliminar este tema?')) {
+                themes.splice(editingTheme, 1);
+                saveThemes();
+                updateStats();
+                updateAllTab();
+                updateDashboard();
+                closeEditModal();
+            }
+        }
     </script>
-</body>
-</html>
+    
+    <!-- Modal de edición -->
+    <div id="edit-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto;">
+        <div class="card" style="margin: 20px auto; max-width: 500px; background: white; padding: 20px; border-radius: 8px;">
+            <h2 style="margin-bottom: 15px;">✏️ Editar Tema</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Tema</label>
+                <input id="edit-tema" class="form-input" type="text">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Acción Clave</label>
+                <textarea id="edit-accion" class="form-textarea"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Categoría</label>
+                <select id="edit-categoria" class="form-select"></select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Estado</label>
+                <select id="edit-estado" class="form-select">
+                    <option value="1-Abierto">Abierto</option>
+                    <option value="2-Finalizada">Finalizada</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Fecha Compromiso</label>
+                <input id="edit-fecha" class="form-input" type="date">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Notas</label>
+                <textarea id="edit-notas" class="form-textarea"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="saveEditedTheme()" style="flex: 1;">💾 Guardar</button>
+                <button class="btn" onclick="closeEditModal()" style="flex: 1; background: #999;">✕ Cancelar</button>
+                <button class="btn" onclick="deleteTheme()" style="flex: 1; background: #dc2626;">🗑️ Eliminar</button>
+            </div>
+        </div>
+    </div>
+
