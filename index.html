@@ -157,7 +157,11 @@
         <div id="tab-all" class="tab-content">
             <div class="card">
                 <input id="search-input" class="form-input" type="text" placeholder="🔍 Buscar tema o acción..." oninput="renderAllTab()">
-                <div style="margin-top:6px;font-size:12px;color:#666;">📋 <strong id="count-all">0</strong> temas</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                    <div style="font-size:12px;color:#666;">📋 <strong id="count-all">0</strong> temas</div>
+                    <button class="btn" id="btn-send-email" onclick="enviarCorreoAdHoc()" style="background:#3b82f6;color:white;font-size:12px;padding:6px 12px;">📧 Enviar por correo</button>
+                </div>
+                <div id="email-status" style="font-size:11px;color:#666;margin-top:4px;display:none;"></div>
             </div>
             <div class="card">
                 <div class="filters">
@@ -218,7 +222,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5WI8QvMkHcGOCpMYJBXdKOm5o8Xrc2o0Lw-Bfwv34ewYWJNARssllmMARMK3uEFOY/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXKjLfUALeuuIEvzkIFcO9oYpoCxsFm67AJYtEp1NERS5irDoeUK0eqf5swVLZAq_L/exec";
 
 let themes = [];
 let categories = ['Casa','Médicos','Portafolio LGyF','Al Oficina','Personales','Acciones','Hijos','SIN CATEGORIA'];
@@ -441,7 +445,58 @@ function renderAllTab() {
         </div>`).join('');
 }
 
-function extractCategories() {
+function enviarCorreoAdHoc() {
+    const q   = document.getElementById('search-input').value.trim();
+    const cat = document.getElementById('filter-category-all').value;
+    const st  = document.getElementById('filter-state-all').value;
+
+    // Obtener temas visibles actuales
+    let filtered = themes
+        .map((t,i) => ({...t,_i:i}))
+        .filter(t => {
+            if(q && !t.tema.toLowerCase().includes(q.toLowerCase()) && !t.accion.toLowerCase().includes(q.toLowerCase())) return false;
+            if(cat !== 'all' && t.categoria !== cat) return false;
+            if(st  !== 'all' && t.estado    !== st)  return false;
+            return true;
+        })
+        .sort((a,b) => new Date(a.fecha_compromiso||'9999-12-31') - new Date(b.fecha_compromiso||'9999-12-31'));
+
+    if (filtered.length === 0) { alert('No hay temas visibles para enviar.'); return; }
+
+    // Componer asunto dinámico
+    const partes = [];
+    if (q)         partes.push(`"${q}"`);
+    if (cat !== 'all') partes.push(cat);
+    if (st  !== 'all') partes.push(st === '1-Abierto' ? 'Abiertos' : 'Cerrados');
+    const criterio = partes.length > 0 ? partes.join(' · ') : 'Todos los temas';
+    const asunto   = `Momentum — ${criterio} (${filtered.length} temas)`;
+
+    // Mostrar estado
+    const statusEl = document.getElementById('email-status');
+    statusEl.style.display = 'block';
+    statusEl.textContent = '⏳ Enviando...';
+
+    // Llamar al Apps Script para enviar
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+            action: 'send_email',
+            asunto,
+            criterio,
+            temas: filtered
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        statusEl.textContent = data.ok ? `✅ Correo enviado — "${asunto}"` : '⚠️ Error: ' + data.error;
+        setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+    })
+    .catch(() => {
+        statusEl.textContent = '📵 Sin red — no se pudo enviar';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+    });
+}
     const u = [...new Set(themes.map(t=>t.categoria).filter(Boolean))].sort();
     if(u.length){ categories=u; localStorage.setItem('categories_sandra',JSON.stringify(categories)); updateCategoryDropdowns(); }
 }
