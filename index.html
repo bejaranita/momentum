@@ -161,7 +161,7 @@
             </div>
             <div class="card">
                 <div class="filters">
-                    <select id="filter-category-all" class="form-select" onchange="renderAllTab()">
+                    <select id="filter-category-all" class="form-select" onchange="if(this.value==='NEW') showNewCategoryAll(); else renderAllTab()">
                         <option value="all">Todas categorías</option>
                     </select>
                     <select id="filter-state-all" class="form-select" onchange="renderAllTab()">
@@ -169,6 +169,13 @@
                         <option value="1-Abierto">Abiertos</option>
                         <option value="2-Finalizada">Cerrados</option>
                     </select>
+                </div>
+                <div id="new-category-div-all" style="display:none;" class="new-category-box" style="margin-top:8px;">
+                    <input id="new-category-input-all" type="text" placeholder="Nombre de categoría">
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="addNewCategoryAll()" style="padding:8px 12px;background:#4caf50;color:white;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">Agregar</button>
+                        <button onclick="cancelNewCategoryAll()" style="padding:8px 12px;background:#999;color:white;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">Cancelar</button>
+                    </div>
                 </div>
             </div>
             <div id="all-items"></div>
@@ -183,7 +190,17 @@
         <h2 style="margin-bottom:15px;font-size:15px;">✏️ Editar Tema</h2>
         <div class="form-group"><label class="form-label">Tema</label><input id="edit-tema" class="form-input" type="text"></div>
         <div class="form-group"><label class="form-label">Acción Clave</label><textarea id="edit-accion" class="form-textarea"></textarea></div>
-        <div class="form-group"><label class="form-label">Categoría</label><select id="edit-categoria" class="form-select"></select></div>
+        <div class="form-group">
+            <label class="form-label">Categoría</label>
+            <select id="edit-categoria" class="form-select" onchange="if(this.value==='NEW') showNewCategoryModal()"></select>
+        </div>
+        <div id="new-category-div-modal" style="display:none;" class="new-category-box">
+            <input id="new-category-input-modal" type="text" placeholder="Nombre de categoría">
+            <div style="display:flex;gap:8px;">
+                <button onclick="addNewCategoryModal()" style="padding:8px 12px;background:#4caf50;color:white;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">Agregar</button>
+                <button onclick="cancelNewCategoryModal()" style="padding:8px 12px;background:#999;color:white;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">Cancelar</button>
+            </div>
+        </div>
         <div class="form-group"><label class="form-label">Estado</label>
             <select id="edit-estado" class="form-select">
                 <option value="1-Abierto">Abierto</option>
@@ -316,10 +333,24 @@ function openEditModal(index) {
     document.getElementById('edit-tema').value   = t.tema   || '';
     document.getElementById('edit-accion').value = t.accion || '';
     document.getElementById('edit-estado').value = t.estado || '1-Abierto';
-    document.getElementById('edit-fecha').value  = t.fecha_compromiso || '';
     document.getElementById('edit-notas').value  = t.notas  || '';
-    document.getElementById('edit-categoria').innerHTML =
-        categories.map(c => `<option value="${c}" ${c===t.categoria?'selected':''}>${c}</option>`).join('');
+
+    // Normalizar fecha a YYYY-MM-DD sin importar el formato que venga
+    let fecha = '';
+    if (t.fecha_compromiso) {
+        const d = new Date(t.fecha_compromiso);
+        if (!isNaN(d)) {
+            fecha = d.toISOString().split('T')[0];
+        } else {
+            fecha = t.fecha_compromiso.substring(0, 10);
+        }
+    }
+    document.getElementById('edit-fecha').value = fecha;
+
+    const catSel = document.getElementById('edit-categoria');
+    catSel.innerHTML = categories.map(c => `<option value="${c}" ${c===t.categoria?'selected':''}>${c}</option>`).join('') 
+        + '<option value="NEW">+ Nueva categoría</option>';
+    document.getElementById('new-category-div-modal').style.display = 'none';
     document.getElementById('edit-modal').style.display = 'block';
 }
 
@@ -418,9 +449,55 @@ function extractCategories() {
 function updateCategoryDropdowns() {
     const opts = categories.map(c=>`<option value="${c}">${c}</option>`).join('');
     const fo = '<option value="all">Todas categorías</option>';
-    document.getElementById('input-categoria').innerHTML = opts + '<option value="NEW">+ Nueva categoría</option>';
+    const newOpt = '<option value="NEW">+ Nueva categoría</option>';
+    document.getElementById('input-categoria').innerHTML = opts + newOpt;
     document.getElementById('filter-category-dashboard').innerHTML = fo + opts;
-    document.getElementById('filter-category-all').innerHTML       = fo + opts;
+    document.getElementById('filter-category-all').innerHTML = fo + opts + newOpt;
+}
+
+function showNewCategoryModal() {
+    document.getElementById('new-category-div-modal').style.display = 'block';
+}
+function cancelNewCategoryModal() {
+    document.getElementById('new-category-div-modal').style.display = 'none';
+    document.getElementById('edit-categoria').value = themes[editingIndex]?.categoria || categories[0];
+}
+function addNewCategoryModal() {
+    const name = document.getElementById('new-category-input-modal').value.trim().toUpperCase();
+    if(name && !categories.includes(name)) {
+        categories.push(name);
+        localStorage.setItem('categories_sandra', JSON.stringify(categories));
+        updateCategoryDropdowns();
+        // Agregar también al select del modal
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        const sel = document.getElementById('edit-categoria');
+        sel.insertBefore(opt, sel.lastChild);
+    }
+    document.getElementById('edit-categoria').value = name;
+    document.getElementById('new-category-div-modal').style.display = 'none';
+    document.getElementById('new-category-input-modal').value = '';
+}
+
+function showNewCategoryAll() {
+    document.getElementById('new-category-div-all').style.display = 'block';
+}
+function cancelNewCategoryAll() {
+    document.getElementById('new-category-div-all').style.display = 'none';
+    document.getElementById('filter-category-all').value = 'all';
+    renderAllTab();
+}
+function addNewCategoryAll() {
+    const name = document.getElementById('new-category-input-all').value.trim().toUpperCase();
+    if(name && !categories.includes(name)) {
+        categories.push(name);
+        localStorage.setItem('categories_sandra', JSON.stringify(categories));
+        updateCategoryDropdowns();
+    }
+    document.getElementById('new-category-div-all').style.display = 'none';
+    document.getElementById('new-category-input-all').value = '';
+    document.getElementById('filter-category-all').value = name || 'all';
+    renderAllTab();
 }
 
 function showNewCategory()   { document.getElementById('new-category-div').style.display='block'; }
