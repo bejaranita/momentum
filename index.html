@@ -534,7 +534,7 @@ function cancelNewCategoryAll() {
     renderAllTab();
 }
 function addNewCategoryAll() {
-    const name = document.getElementById('new-category-input-all').value.trim().toUpperCase();
+    var name = document.getElementById('new-category-input-all').value.trim().toUpperCase();
     if(name && !categories.includes(name)) {
         categories.push(name);
         localStorage.setItem('categories_sandra', JSON.stringify(categories));
@@ -544,6 +544,29 @@ function addNewCategoryAll() {
     document.getElementById('new-category-input-all').value = '';
     document.getElementById('filter-category-all').value = name || 'all';
     renderAllTab();
+}
+
+function showNewCategoryModal() {
+    document.getElementById('new-category-div-modal').style.display = 'block';
+}
+function cancelNewCategoryModal() {
+    document.getElementById('new-category-div-modal').style.display = 'none';
+    document.getElementById('edit-categoria').value = themes[editingIndex] ? themes[editingIndex].categoria : categories[0];
+}
+function addNewCategoryModal() {
+    var name = document.getElementById('new-category-input-modal').value.trim().toUpperCase();
+    if(name && !categories.includes(name)) {
+        categories.push(name);
+        localStorage.setItem('categories_sandra', JSON.stringify(categories));
+        updateCategoryDropdowns();
+        var opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        var sel = document.getElementById('edit-categoria');
+        sel.insertBefore(opt, sel.lastChild);
+    }
+    document.getElementById('edit-categoria').value = name;
+    document.getElementById('new-category-div-modal').style.display = 'none';
+    document.getElementById('new-category-input-modal').value = '';
 }
 
 function showNewCategory()   { document.getElementById('new-category-div').style.display='block'; }
