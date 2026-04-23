@@ -450,7 +450,6 @@ function enviarCorreoAdHoc() {
     const cat = document.getElementById('filter-category-all').value;
     const st  = document.getElementById('filter-state-all').value;
 
-    // Obtener temas visibles actuales
     let filtered = themes
         .map((t,i) => ({...t,_i:i}))
         .filter(t => {
@@ -463,38 +462,30 @@ function enviarCorreoAdHoc() {
 
     if (filtered.length === 0) { alert('No hay temas visibles para enviar.'); return; }
 
-    // Componer asunto dinámico
     const partes = [];
-    if (q)         partes.push(`"${q}"`);
+    if (q) partes.push('"' + q + '"');
     if (cat !== 'all') partes.push(cat);
     if (st  !== 'all') partes.push(st === '1-Abierto' ? 'Abiertos' : 'Cerrados');
-    const criterio = partes.length > 0 ? partes.join(' · ') : 'Todos los temas';
-    const asunto   = `Momentum — ${criterio} (${filtered.length} temas)`;
+    const criterio = partes.length > 0 ? partes.join(' - ') : 'Todos los temas';
+    const asunto   = 'Momentum — ' + criterio + ' (' + filtered.length + ' temas)';
 
-    // Mostrar estado
     const statusEl = document.getElementById('email-status');
     statusEl.style.display = 'block';
     statusEl.textContent = '⏳ Enviando...';
 
-    // Llamar al Apps Script para enviar
     fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-            action: 'send_email',
-            asunto,
-            criterio,
-            temas: filtered
-        })
+        body: JSON.stringify({ action: 'send_email', asunto, criterio, temas: filtered })
     })
     .then(r => r.json())
     .then(data => {
-        statusEl.textContent = data.ok ? `✅ Correo enviado — "${asunto}"` : '⚠️ Error: ' + data.error;
-        setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+        statusEl.textContent = data.ok ? '✅ Correo enviado' : '⚠️ Error: ' + data.error;
+        setTimeout(function() { statusEl.style.display = 'none'; }, 5000);
     })
-    .catch(() => {
+    .catch(function() {
         statusEl.textContent = '📵 Sin red — no se pudo enviar';
-        setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+        setTimeout(function() { statusEl.style.display = 'none'; }, 5000);
     });
 }
     const u = [...new Set(themes.map(t=>t.categoria).filter(Boolean))].sort();
