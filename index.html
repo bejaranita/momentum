@@ -472,12 +472,16 @@ function extractCategories() {
 }
 
 function updateCategoryDropdowns() {
+    var prevDash = document.getElementById('filter-category-dashboard').value;
+    var prevAll = document.getElementById('filter-category-all').value;
     var opts = categories.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
     var fo = '<option value="all">Todas categorías</option>';
     var newOpt = '<option value="NEW">+ Nueva categoría</option>';
     document.getElementById('input-categoria').innerHTML = opts + newOpt;
     document.getElementById('filter-category-dashboard').innerHTML = fo + opts;
     document.getElementById('filter-category-all').innerHTML = fo + opts + newOpt;
+    if(prevDash) document.getElementById('filter-category-dashboard').value = prevDash;
+    if(prevAll && prevAll !== 'NEW') document.getElementById('filter-category-all').value = prevAll;
 }
 
 function showNewCategory() { document.getElementById('new-category-div').style.display = 'block'; }
