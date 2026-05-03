@@ -295,6 +295,13 @@ function closeTheme(index) {
     postToSheets({ action: 'update', theme: themes[index] });
 }
 
+function reopenTheme(index) {
+    themes[index].estado = '1-Abierto';
+    themes[index].prioridad = calculatePriority(themes[index].fecha_compromiso);
+    saveLocal(); refreshUI();
+    postToSheets({ action: 'update', theme: themes[index] });
+}
+
 function saveEditedTheme() {
     if(editingIndex === null) return;
     var fecha = document.getElementById('edit-fecha').value;
@@ -423,7 +430,11 @@ function renderAllTab() {
             '<div class="theme-field">🎯 ' + t.accion + '</div>' +
             '<div class="theme-field">📅 ' + (t.fecha_compromiso||'Sin fecha') + ' · 📌 ' + t.categoria + prior + '</div>' +
             badge +
-            '<div class="theme-actions"><button style="background:#dcfce7;color:#15803d;" onclick="event.stopPropagation();closeTheme(' + t._i + ')">✅ Cerrar</button></div>' +
+            '<div class="theme-actions">' +
+            (t.estado === '2-Finalizada'
+                ? '<button style="background:#dbeafe;color:#1d4ed8;" onclick="event.stopPropagation();reopenTheme(' + t._i + ')">↩️ Reabrir</button>'
+                : '<button style="background:#dcfce7;color:#15803d;" onclick="event.stopPropagation();closeTheme(' + t._i + ')">✅ Cerrar</button>') +
+            '</div>' +
             '</div>';
     }).join('');
 }
