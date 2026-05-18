@@ -295,13 +295,6 @@ function closeTheme(index) {
     postToSheets({ action: 'update', theme: themes[index] });
 }
 
-function reopenTheme(index) {
-    themes[index].estado = '1-Abierto';
-    themes[index].prioridad = calculatePriority(themes[index].fecha_compromiso);
-    saveLocal(); refreshUI();
-    postToSheets({ action: 'update', theme: themes[index] });
-}
-
 function saveEditedTheme() {
     if(editingIndex === null) return;
     var fecha = document.getElementById('edit-fecha').value;
@@ -419,7 +412,13 @@ function renderAllTab() {
         if(cat !== 'all' && t.categoria !== cat) return false;
         if(st !== 'all' && t.estado !== st) return false;
         return true;
-    }).sort(function(a,b) { return new Date(a.fecha_compromiso||'9999-12-31') - new Date(b.fecha_compromiso||'9999-12-31'); });
+    });
+    // Separar abiertos y cerrados
+    var abiertos = filtered.filter(function(t) { return t.estado !== '2-Finalizada'; })
+        .sort(function(a,b) { return new Date(a.fecha_compromiso||'9999-12-31') - new Date(b.fecha_compromiso||'9999-12-31'); });
+    var cerrados = filtered.filter(function(t) { return t.estado === '2-Finalizada'; })
+        .sort(function(a,b) { return new Date(b.fecha_compromiso||'0001-01-01') - new Date(a.fecha_compromiso||'0001-01-01'); });
+    filtered = abiertos.concat(cerrados);
     document.getElementById('count-all').textContent = filtered.length;
     document.getElementById('all-items').innerHTML = filtered.map(function(t) {
         var cls = t.estado === '2-Finalizada' ? 'closed' : t.prioridad === '🔴 Urgente' ? 'urgent' : '';
@@ -430,11 +429,7 @@ function renderAllTab() {
             '<div class="theme-field">🎯 ' + t.accion + '</div>' +
             '<div class="theme-field">📅 ' + (t.fecha_compromiso||'Sin fecha') + ' · 📌 ' + t.categoria + prior + '</div>' +
             badge +
-            '<div class="theme-actions">' +
-            (t.estado === '2-Finalizada'
-                ? '<button style="background:#dbeafe;color:#1d4ed8;" onclick="event.stopPropagation();reopenTheme(' + t._i + ')">↩️ Reabrir</button>'
-                : '<button style="background:#dcfce7;color:#15803d;" onclick="event.stopPropagation();closeTheme(' + t._i + ')">✅ Cerrar</button>') +
-            '</div>' +
+            '<div class="theme-actions"><button style="background:#dcfce7;color:#15803d;" onclick="event.stopPropagation();closeTheme(' + t._i + ')">✅ Cerrar</button></div>' +
             '</div>';
     }).join('');
 }
@@ -483,16 +478,12 @@ function extractCategories() {
 }
 
 function updateCategoryDropdowns() {
-    var prevDash = document.getElementById('filter-category-dashboard').value;
-    var prevAll = document.getElementById('filter-category-all').value;
     var opts = categories.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
     var fo = '<option value="all">Todas categorías</option>';
     var newOpt = '<option value="NEW">+ Nueva categoría</option>';
     document.getElementById('input-categoria').innerHTML = opts + newOpt;
     document.getElementById('filter-category-dashboard').innerHTML = fo + opts;
     document.getElementById('filter-category-all').innerHTML = fo + opts + newOpt;
-    if(prevDash) document.getElementById('filter-category-dashboard').value = prevDash;
-    if(prevAll && prevAll !== 'NEW') document.getElementById('filter-category-all').value = prevAll;
 }
 
 function showNewCategory() { document.getElementById('new-category-div').style.display = 'block'; }
